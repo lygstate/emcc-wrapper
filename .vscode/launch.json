@@ -1,0 +1,29 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(Windows) Launch",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/x64-pc-windows-msvc-19-1-Debug/emcc.exe",
+            "args": [],
+            "stopAtEntry": false,
+            // "cwd": "D:/work/xtal/xtal-wasm/build-msvc",
+            "cwd": "${workspaceFolder}/",
+            "environment": [
+                {
+                    "name": "EMSDK_PYTHON_DLL",
+                    "value": "D:\\CI-Tools\\emsdk\\python\\3.13.3_64bit\\python3.dll"
+                },
+                {
+                    "name": "EMSDK_PYTHON",
+                    "value": "D:\\CI-Tools\\emsdk\\python\\3.13.3_64bit\\python.exe"
+                }
+            ],
+            "console": "externalTerminal"
+        }
+    ]
+}
