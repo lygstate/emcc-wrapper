@@ -14,11 +14,13 @@
 // Define _WIN32_WINNT to Windows 7 for max portability
 #define _WIN32_WINNT 0x0601
 
-#include <windows.h>
-#include <shellapi.h>
-#include <shlwapi.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include <windows.h>
+
+#include <shellapi.h>
+#include <shlwapi.h>
 
 #pragma comment(lib, "shlwapi.lib")
 #pragma comment(lib, "shell32.lib")
@@ -70,7 +72,9 @@ wchar_t* get_module_path() {
 
 // Handle the _EMCC_CCACHE environment variable which essentially re-executes
 // the lauccher command with `cacche.exe` prefixed.
-BOOL handle_ccache(wchar_t** application_name, wchar_t** command_line, const wchar_t* launcher_path) {
+BOOL handle_ccache(wchar_t** application_name,
+                   wchar_t** command_line,
+                   const wchar_t* launcher_path) {
   const wchar_t* ccache_env = _wgetenv(L"_EMCC_CCACHE");
   if (!ccache_env || !*ccache_env) {
     return FALSE;
@@ -79,12 +83,14 @@ BOOL handle_ccache(wchar_t** application_name, wchar_t** command_line, const wch
   _wputenv_s(L"_EMCC_CCACHE", L"");
   *application_name = L"ccache.exe";
 
-  size_t command_line_len = wcslen(*application_name) + wcslen(launcher_path) + 6;
+  size_t command_line_len =
+      wcslen(*application_name) + wcslen(launcher_path) + 6;
   *command_line = malloc(sizeof(wchar_t) * command_line_len);
   if (!*command_line)
     abort();
 
-  swprintf(*command_line, command_line_len, L"\"%s\" \"%s\"", *application_name, launcher_path);
+  swprintf(*command_line, command_line_len, L"\"%s\" \"%s\"", *application_name,
+           launcher_path);
   return TRUE;
 }
 
@@ -148,15 +154,18 @@ int wmain(int argc, wchar_t** argv) {
   wchar_t* launcher_path_w = get_module_path();
   wchar_t* script_path_w = get_script_path(launcher_path_w);
   wchar_t* long_script_path = get_long_path(script_path_w);
-  size_t command_line_len = wcslen(application_name) + wcslen(long_script_path) + 9;
+  size_t command_line_len =
+      wcslen(application_name) + wcslen(long_script_path) + 9;
   if (ccache) {
     command_line_len += wcslen(ccache) + 1;
   }
   wchar_t* command_line = malloc(sizeof(wchar_t) * command_line_len);
   if (ccache) {
-    swprintf(command_line, command_line_len, L"%s \"%s\" -E \"%s\"", ccache, application_name, long_script_path);
+    swprintf(command_line, command_line_len, L"%s \"%s\" -E \"%s\"", ccache,
+             application_name, long_script_path);
   } else {
-    swprintf(command_line, command_line_len, L"\"%s\" -E \"%s\"", application_name, long_script_path);
+    swprintf(command_line, command_line_len, L"\"%s\" -E \"%s\"",
+             application_name, long_script_path);
   }
 
   free(long_script_path);
@@ -170,7 +179,8 @@ int wmain(int argc, wchar_t** argv) {
     size_t current_len = wcslen(command_line);
     size_t args_len = wcslen(all_args);
     // +2 for the space and the null terminator
-    command_line = realloc(command_line, (current_len + args_len + 2) * sizeof(wchar_t));
+    command_line =
+        realloc(command_line, (current_len + args_len + 2) * sizeof(wchar_t));
     if (!command_line)
       abort();
     wcscat_s(command_line, current_len + args_len + 2, L" ");
@@ -190,7 +200,8 @@ int wmain(int argc, wchar_t** argv) {
   si.cb = sizeof(si);
   ZeroMemory(&pi, sizeof(pi));
 
-  if (!CreateProcessW(application_name, command_line, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi)) {
+  if (!CreateProcessW(application_name, command_line, NULL, NULL, FALSE, 0,
+                      NULL, NULL, &si, &pi)) {
     wprintf(L"CreateProcess failed (%d).\n", GetLastError());
     abort();
   }
