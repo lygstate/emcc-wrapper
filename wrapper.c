@@ -176,6 +176,13 @@ void wmainCRTStartup() {
   memcpy(launcher_path_w + launcher_path_w_length - 3, L"py", 6);
   wchar_t* long_script_path = get_long_path(launcher_path_w);
   free(launcher_path_w);
+  size_t long_script_path_length = wcslen(long_script_path);
+  wchar_t* long_script_path_unc =
+      malloc((long_script_path_length + 1 + 4) * sizeof(wchar_t));
+  memcpy(long_script_path_unc, L"\\\\?\\", 4 * sizeof(wchar_t));
+  memcpy(long_script_path_unc + 4, long_script_path,
+         (long_script_path_length + 1) * sizeof(wchar_t));
+  free(long_script_path);
 
   // Build the final command line by appending the original arguments
   int argc;
@@ -183,7 +190,7 @@ void wmainCRTStartup() {
   wchar_t** argv_final = malloc(((argc + 2) * sizeof(wchar_t*)));
   argv_final[0] = argv[0];
   argv_final[1] = L"-E";
-  argv_final[2] = long_script_path;
+  argv_final[2] = long_script_path_unc;
   for (int i = 1; i < argc; i += 1) {
     argv_final[2 + i] = argv[i];
   }
