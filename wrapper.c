@@ -26,7 +26,7 @@
 wchar_t* get_python_executable() {
   wchar_t* python_exe_w = _wgetenv(L"EMSDK_PYTHON");
   if (!python_exe_w) {
-    return L"python";
+    return L"python.exe";
   }
   return python_exe_w;
 }
@@ -36,12 +36,12 @@ wchar_t* get_long_path(const wchar_t* path) {
   if (path_len == 0)
     abort();
 
-  wchar_t* full_path = malloc(sizeof(wchar_t) * (path_len + 4));
+  wchar_t* full_path = malloc(sizeof(wchar_t) * (path_len + 1));
   if (!full_path)
     abort();
 
-  wcscpy_s(full_path, path_len + 4, L"\\\\?\\");
-  if (GetFullPathNameW(path, path_len, full_path + 4, NULL) == 0)
+  full_path[path_len] = 0;
+  if (GetFullPathNameW(path, path_len, full_path, NULL) == 0)
     abort();
   return full_path;
 }
